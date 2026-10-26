@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+swap/migration/
+*.env
+.env
+.env.*
+!.env.example

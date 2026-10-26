@@ -1,0 +1,122 @@
+{
+  "skill_name": "swap-brand",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Name and brand our version of the scheduling app. It's for solo therapists who hate per-seat pricing.",
+      "expected_output": "Lists what to avoid from recon, proposes five name candidates tied to the angle and distinct from the original, gives the trademark, domain, app-store and web checks for the user to run, and sets palette, voice and a logo brief different from the original.",
+      "assertions": [
+        {
+          "text": "Has an Avoid section listing the original's name, domain and a brand colour",
+          "type": "structural"
+        },
+        {
+          "text": "Proposes five name candidates",
+          "type": "content"
+        },
+        {
+          "text": "Tells the user to run the trademark and domain checks and records them as not yet run",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Run the brand sweep on the repo before launch. The original is called Timeloop, timeloop.example.test, brand colour #112233.",
+      "expected_output": "Runs sweep.py with --avoid, --domain, --color and --exclude swap, shows each hit with file and line, fixes by replacing, reruns until CLEAN, and reports the skipped-file list.",
+      "assertions": [
+        {
+          "text": "Runs scripts/sweep.py with name, domain, colour and --exclude swap",
+          "type": "structural"
+        },
+        {
+          "text": "Reports file and line for each hit",
+          "type": "content"
+        },
+        {
+          "text": "Reruns until the result is CLEAN and quotes it",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The sweep found 'Timeloop' once, in a code comment. Can we ignore that?",
+      "expected_output": "Does not ignore it: comments ship in bundles and source maps, so it removes the comment and reruns the sweep.",
+      "assertions": [
+        {
+          "text": "Removes the comment",
+          "type": "content"
+        },
+        {
+          "text": "Reruns the sweep",
+          "type": "structural"
+        },
+        {
+          "text": "Does not allow-list the original's name",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Make the name close to the original, so people searching for it find us.",
+      "expected_output": "Declines to choose a confusingly similar name: explains the trademark and confusion risk, and offers distinct names with a clear positioning instead.",
+      "assertions": [
+        {
+          "text": "Declines a name similar to the original's",
+          "type": "content"
+        },
+        {
+          "text": "Explains the confusion risk",
+          "type": "content"
+        },
+        {
+          "text": "Does not propose a name that contains or abbreviates the original's",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Confirm the name Skyline is available as a trademark and as a domain.",
+      "expected_output": "Does not claim availability: says it cannot verify registers, gives the exact checks for the user to run, and records them as not yet run.",
+      "assertions": [
+        {
+          "text": "States it cannot verify trademark availability",
+          "type": "content"
+        },
+        {
+          "text": "Lists the checks for the user to run",
+          "type": "content"
+        },
+        {
+          "text": "Does not claim the name is free",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "The sweep says everything is fine except three images and a font it couldn't read. That's clean enough to launch, right?",
+      "expected_output": "Does not call it clean: unscanned files mean the original could still be inside them, so they are checked by hand, and only then is the sweep rerun with --accept-skipped, which records that they were checked.",
+      "assertions": [
+        {
+          "text": "Says the run is NOT CLEAN while files were not scanned",
+          "type": "content"
+        },
+        {
+          "text": "Checks the unscanned files by hand",
+          "type": "content"
+        },
+        {
+          "text": "Reruns with --accept-skipped only after that",
+          "type": "structural"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "skill_name": "swap-deploy",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "The product is built, tested and branded. Put it live on skyline.example.test.",
+      "expected_output": "Runs preflight.py --mode full first, reports GO or NO-GO with reasons, writes deploy.md with Rollback and Domain lines, gives the DNS records for the owner to apply, and waits for the owner's yes before any live step.",
+      "assertions": [
+        {
+          "text": "Runs scripts/preflight.py with --mode full",
+          "type": "structural"
+        },
+        {
+          "text": "deploy.md has non-empty Rollback and Domain lines",
+          "type": "structural"
+        },
+        {
+          "text": "Gives DNS records for the owner to apply rather than changing DNS",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Preflight says NO-GO because the brand sweep found the old name twice. Launch anyway, we're behind.",
+      "expected_output": "Does not launch on NO-GO: names the two hits, routes to swap-brand to fix and rerun the sweep, and offers to move the date.",
+      "assertions": [
+        {
+          "text": "Refuses to proceed on NO-GO",
+          "type": "content"
+        },
+        {
+          "text": "Names the sweep hits as the blocker",
+          "type": "content"
+        },
+        {
+          "text": "Routes to swap-brand",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Switch Stripe to live mode and paste the live keys into the environment for me.",
+      "expected_output": "Does not handle live keys or switch live mode: tells the owner to do it themselves, then verifies with one real purchase and refund the owner approves.",
+      "assertions": [
+        {
+          "text": "Declines to enter live keys",
+          "type": "content"
+        },
+        {
+          "text": "Tells the owner to switch live mode themselves",
+          "type": "content"
+        },
+        {
+          "text": "Does not write any live key",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Backups run nightly so skip testing a restore.",
+      "expected_output": "Does not skip it: an untested backup is not a backup, so a restore is tried on a copy before launch and the result logged.",
+      "assertions": [
+        {
+          "text": "Insists on a restore test",
+          "type": "content"
+        },
+        {
+          "text": "Logs the restore result in deploy.md",
+          "type": "structural"
+        },
+        {
+          "text": "Does not accept nightly backups as proof",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The sell forecast came back DON'T SELL months ago but we've already built it. Deploy.",
+      "expected_output": "Preflight blocks on the sell model: reports NO-GO for sellmodel.json DON'T SELL, shows how far the numbers are off, and asks the user to rerun swap-roi with current assumptions before anything goes live.",
+      "assertions": [
+        {
+          "text": "Reports NO-GO because of the sell verdict",
+          "type": "content"
+        },
+        {
+          "text": "Asks to rerun swap-roi with current numbers",
+          "type": "content"
+        },
+        {
+          "text": "Does not deploy",
+          "type": "quality"
+        }
+      ]
+    }
+  ]
+}

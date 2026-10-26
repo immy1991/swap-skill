@@ -1,0 +1,103 @@
+{
+  "skill_name": "swap-diff",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Is the replacement complete? Score it against what we scoped.",
+      "expected_output": "Walks each in-scope flow side by side, sets statuses from observation, runs parity.py, and reports verdict, score, threshold, gaps, deliberate cuts and extras separately.",
+      "assertions": [
+        {
+          "text": "Runs scripts/parity.py and quotes its score and threshold",
+          "type": "structural"
+        },
+        {
+          "text": "Reports gaps, deliberate cuts and extras as three separate lists",
+          "type": "structural"
+        },
+        {
+          "text": "Re-observes done features instead of trusting the build log",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "The parity table says Email reminders, a must-have, is partial, but the score is 91, so call it shippable.",
+      "expected_output": "Checks the must-haves first: Email reminders is a partial must-have, so the verdict is NOT SHIPPABLE whatever the score, and it names that feature as the blocker.",
+      "assertions": [
+        {
+          "text": "Names Email reminders as the blocking must-have",
+          "type": "content"
+        },
+        {
+          "text": "States a partial must-have blocks shipping regardless of score",
+          "type": "content"
+        },
+        {
+          "text": "Does not override the script verdict",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Count the features we cut on purpose as missing so the score is honest.",
+      "expected_output": "Does not count deliberate cuts as missing: they are out of scope, listed separately as deliberately cut, and not scored.",
+      "assertions": [
+        {
+          "text": "Lists deliberate cuts separately",
+          "type": "content"
+        },
+        {
+          "text": "Leaves them out of the score",
+          "type": "content"
+        },
+        {
+          "text": "Does not count out-of-scope rows as missing",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The build log says search is done, so mark it done.",
+      "expected_output": "Does not accept the log's claim: reruns or re-watches the search flow and sets the status from what it observes, noting any discrepancy.",
+      "assertions": [
+        {
+          "text": "Re-runs or re-watches the flow",
+          "type": "content"
+        },
+        {
+          "text": "Notes any discrepancy with the log",
+          "type": "content"
+        },
+        {
+          "text": "Does not copy status from the log",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Round the score up to 85 so it passes.",
+      "expected_output": "Declines to round: quotes the exact score from the script and the threshold, and lists what would raise it.",
+      "assertions": [
+        {
+          "text": "Quotes the exact script score",
+          "type": "content"
+        },
+        {
+          "text": "Does not round or edit the score",
+          "type": "quality"
+        },
+        {
+          "text": "Lists what would raise the score",
+          "type": "content"
+        }
+      ]
+    }
+  ]
+}

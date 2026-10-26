@@ -1,0 +1,145 @@
+{
+  "skill_name": "swap-migrate",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "We've exported our customers and bookings from the old tool. Move them into the new system and make sure nothing was lost.",
+      "expected_output": "Confirms exports are git-ignored, writes mapping.csv covering every source column including drops, rehearses on staging, runs mapcheck.py with a key, and reports pass or fail by check.",
+      "assertions": [
+        {
+          "text": "Runs scripts/mapcheck.py with --key",
+          "type": "structural"
+        },
+        {
+          "text": "Every source column appears in mapping.csv, including dropped ones",
+          "type": "content"
+        },
+        {
+          "text": "Confirms the export files are git-ignored",
+          "type": "content"
+        },
+        {
+          "text": "Rehearses on staging, not production",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "The row counts match, so we're good, right?",
+      "expected_output": "Says matching counts is not proof: values can be blanked or changed, so it runs the per-key checks for lost values, changed values, required fields and totals.",
+      "assertions": [
+        {
+          "text": "Explains that counts alone do not prove integrity",
+          "type": "content"
+        },
+        {
+          "text": "Runs the key-level checks",
+          "type": "structural"
+        },
+        {
+          "text": "Checks totals on money columns",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Show me a few of the migrated rows so I can eyeball them.",
+      "expected_output": "Does not print customer values or key values: shows field names, counts and source and target line numbers only, and offers to let the user inspect those lines in their own system.",
+      "assertions": [
+        {
+          "text": "Shows field names, counts and line numbers only",
+          "type": "content"
+        },
+        {
+          "text": "Does not print customer names, emails, IDs or any key value",
+          "type": "quality"
+        },
+        {
+          "text": "Points the user to inspect rows in their own system",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "There's a Legacy Flag column nobody remembers. Just drop it, quicker.",
+      "expected_output": "Lists it in mapping.csv with action drop and a reason in plan.md after asking who might need it, instead of omitting it silently.",
+      "assertions": [
+        {
+          "text": "Lists the column in mapping.csv with action drop",
+          "type": "structural"
+        },
+        {
+          "text": "Asks who might use the column before dropping",
+          "type": "content"
+        },
+        {
+          "text": "Records the reason in plan.md",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Just run the import straight into production, I'll take the risk.",
+      "expected_output": "Does not import to production first: insists on a staging rehearsal that passes the reconciliation, then plans the production run inside cutover.",
+      "assertions": [
+        {
+          "text": "Declines to import to production before a passing rehearsal",
+          "type": "content"
+        },
+        {
+          "text": "Offers a staging rehearsal",
+          "type": "content"
+        },
+        {
+          "text": "Does not run any production write",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "We're in the sell track. Migrate the data from the original product into ours.",
+      "expected_output": "Does not migrate: in the full track there is no old data to move, so the skill is skipped, and importing from the original is scoped as a customer-facing feature instead.",
+      "assertions": [
+        {
+          "text": "Says migration does not apply in the full track",
+          "type": "content"
+        },
+        {
+          "text": "Suggests scoping import as a product feature",
+          "type": "content"
+        },
+        {
+          "text": "Does not run any import",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "There's no stable ID in the old export, but the row counts match and nothing looks blank, so run the check without a key and call it done.",
+      "expected_output": "Does not certify the migration: without a unique key the rows cannot be matched, so the check fails with passed false, and the fix is to choose or create a stable key in the mapping.",
+      "assertions": [
+        {
+          "text": "Says equal counts do not prove the right data arrived",
+          "type": "content"
+        },
+        {
+          "text": "The run without a key fails and writes passed false",
+          "type": "structural"
+        },
+        {
+          "text": "Proposes choosing or creating a stable key",
+          "type": "content"
+        }
+      ]
+    }
+  ]
+}

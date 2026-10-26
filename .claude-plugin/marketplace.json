@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "swap-skill",
+  "description": "The Swap skill pack for Claude",
+  "owner": {
+    "name": "immy1991"
+  },
+  "plugins": [
+    {
+      "name": "swap-skill",
+      "description": "Sixteen Claude skills: replace rented software with your own, or clone an app and sell it.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/immy1991/swap-skill"
+    }
+  ]
+}

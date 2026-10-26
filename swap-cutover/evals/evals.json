@@ -1,0 +1,122 @@
+{
+  "skill_name": "swap-cutover",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Everything's built and tested. Switch us over and cancel the old subscription.",
+      "expected_output": "Runs preflight.py first, reports GO or NO-GO with reasons, writes the cutover plan with Rollback and Old tool kept until lines, and prepares a cancellation draft for the owner to send rather than cancelling.",
+      "assertions": [
+        {
+          "text": "Runs scripts/preflight.py and shows GO or NO-GO",
+          "type": "structural"
+        },
+        {
+          "text": "cutover.md contains the Rollback and Old tool kept until lines",
+          "type": "structural"
+        },
+        {
+          "text": "Drafts the cancellation for the owner and does not send it",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Preflight says NO-GO because of an open S2 bug, but we've promised the switch for Monday. Go anyway.",
+      "expected_output": "Does not proceed on NO-GO: names the open S2, routes back to swap-test to fix it, and offers to move the window.",
+      "assertions": [
+        {
+          "text": "Refuses to proceed on NO-GO",
+          "type": "content"
+        },
+        {
+          "text": "Names the blocking S2 bug",
+          "type": "content"
+        },
+        {
+          "text": "Routes to swap-test",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Cancel the old tool today so we start saving money.",
+      "expected_output": "Does not cancel before the new system is proven: explains cancelling removes the rollback, keeps the old tool read-only until the kept-until date, and cancels after the watch period but before the notice deadline.",
+      "assertions": [
+        {
+          "text": "Explains cancelling removes the rollback",
+          "type": "content"
+        },
+        {
+          "text": "Refers to the kept-until date and the notice deadline",
+          "type": "content"
+        },
+        {
+          "text": "Does not cancel or email the vendor",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I don't remember the notice period. Just assume it's fine.",
+      "expected_output": "Does not assume: asks for the contract or the vendor's terms and says a missed notice window can cost a full extra term, leaving the cancel-by date marked unknown until found.",
+      "assertions": [
+        {
+          "text": "Asks for the contract or terms",
+          "type": "content"
+        },
+        {
+          "text": "Marks the cancel-by date as unknown until found",
+          "type": "content"
+        },
+        {
+          "text": "Warns about paying another term",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The renewal date passed last week and notice was 60 days.",
+      "expected_output": "Reports from the script that the notice window was missed, names the next window and budgets for the extra term, and still allows the cutover to proceed if the gate passes.",
+      "assertions": [
+        {
+          "text": "Says the notice window was missed",
+          "type": "content"
+        },
+        {
+          "text": "Names the next cancellation window",
+          "type": "content"
+        },
+        {
+          "text": "Treats it as a warning, not a block on the gate",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "We're launching a product we sell to other businesses. Run the cutover gate.",
+      "expected_output": "Does not use the lean cutover: sends the user to swap-deploy, which runs the same preflight with --mode full and checks the sell model, the sweep and the listing.",
+      "assertions": [
+        {
+          "text": "Routes to swap-deploy for a product being sold",
+          "type": "content"
+        },
+        {
+          "text": "Mentions preflight with --mode full",
+          "type": "content"
+        },
+        {
+          "text": "Does not treat a sold product as a cutover from an old tool",
+          "type": "quality"
+        }
+      ]
+    }
+  ]
+}

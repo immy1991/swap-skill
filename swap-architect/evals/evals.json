@@ -1,0 +1,122 @@
+{
+  "skill_name": "swap-architect",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "ROI says build. Plan the stack and database for replacing our booking tool.",
+      "expected_output": "Confirms roi.json says BUILD, runs the adopt-assemble-build check first naming an alternative, then writes architecture.md with stack, schema constraints, features-to-endpoints table, security and recovery, run cost and build order.",
+      "assertions": [
+        {
+          "text": "Quotes the roi verdict at the top",
+          "type": "structural"
+        },
+        {
+          "text": "Records the adopt, assemble or build decision with at least one alternative checked",
+          "type": "content"
+        },
+        {
+          "text": "Maps every in-scope feature to an endpoint or screen",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "The old tool never let two people book the same slot. Make sure the new one can't either.",
+      "expected_output": "Writes the rule as a database constraint, not only application logic, names the constraint in the Schema section, and plans a test that tries to violate it.",
+      "assertions": [
+        {
+          "text": "Enforces the rule with a database constraint",
+          "type": "content"
+        },
+        {
+          "text": "Lists the constraint under Schema",
+          "type": "structural"
+        },
+        {
+          "text": "Plans a test that attempts the double booking",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Skip the ROI step, I know it'll pay back. Just give me the architecture.",
+      "expected_output": "Does not proceed without a passing swap-roi forecast: stops, says roi.json is missing, and routes to swap-roi first.",
+      "assertions": [
+        {
+          "text": "Stops because no passing roi.json exists",
+          "type": "content"
+        },
+        {
+          "text": "Routes to swap-roi",
+          "type": "content"
+        },
+        {
+          "text": "Does not produce an architecture document",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "An open-source scheduling app already does most of this. Should we still build from scratch?",
+      "expected_output": "Checks the open-source option against the in-scope features by name, recommends adopting it if it covers roughly four in five, notes the licence terms, and gives the cost of that choice.",
+      "assertions": [
+        {
+          "text": "Compares the open-source tool to the in-scope features by name",
+          "type": "content"
+        },
+        {
+          "text": "Records the licence terms",
+          "type": "content"
+        },
+        {
+          "text": "Does not default to custom code without the comparison",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use the newest framework everyone is talking about, it'll look good on my profile.",
+      "expected_output": "Pushes back: picks the stack the maintainer can run and fix, explains the maintenance cost of an unfamiliar stack, and asks who will maintain it before deciding.",
+      "assertions": [
+        {
+          "text": "Asks who will maintain the system",
+          "type": "content"
+        },
+        {
+          "text": "Prefers a stack the maintainer knows",
+          "type": "content"
+        },
+        {
+          "text": "States the reason for the stack choice",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Sell forecast says SELL. Plan the architecture for the product, and we want to adopt an open-source scheduler as the base.",
+      "expected_output": "Checks the gate is sellmodel.json, compares the open-source option to the in-scope features, records its licence terms and whether they permit commercial resale, and plans tenancy and billing hooks.",
+      "assertions": [
+        {
+          "text": "Reads sellmodel.json as the gate",
+          "type": "content"
+        },
+        {
+          "text": "Checks the licence allows commercial resale and records the clause",
+          "type": "content"
+        },
+        {
+          "text": "Plans tenancy and billing hooks",
+          "type": "content"
+        }
+      ]
+    }
+  ]
+}

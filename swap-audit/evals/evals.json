@@ -1,0 +1,111 @@
+{
+  "skill_name": "swap-audit",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "We're a 12-person agency and software costs keep creeping up. I've got a list of what we pay for in a spreadsheet. Which tools could we replace with something we build ourselves?",
+      "expected_output": "Builds or reads swap/spend.csv, asks for feature counts from the people who use each tool rather than estimating them, runs spend.py, prints the table, names exactly one tool to swap first with its cancel-by date, and lists unknowns under Gaps.",
+      "assertions": [
+        {
+          "text": "Runs scripts/spend.py and prints its table instead of ranking tools by judgement",
+          "type": "structural"
+        },
+        {
+          "text": "Asks for features used out of features offered from the people using each tool",
+          "type": "content"
+        },
+        {
+          "text": "Names exactly one tool under a First swap heading",
+          "type": "structural"
+        },
+        {
+          "text": "Has a Gaps section that lists every unknown number",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Here's our card statement for the year. Pull out the software and tell me what we're wasting money on.",
+      "expected_output": "Extracts tool names and annual costs from the statement, states the currency, marks tools without usage data as NO-DATA, and asks one batched question for seats, active users, feature counts and renewal dates before any ranking.",
+      "assertions": [
+        {
+          "text": "Asks for the missing columns in one batched message",
+          "type": "structural"
+        },
+        {
+          "text": "States the currency instead of inferring it",
+          "type": "content"
+        },
+        {
+          "text": "Marks tools with no usage data as NO-DATA and keeps them off the shortlist",
+          "type": "content"
+        },
+        {
+          "text": "Does not name a tool to replace before usage data exists",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our biggest line is the payroll provider at 14k a year and we only use a tenth of it. Surely that's the first one to replace?",
+      "expected_output": "Declines to offer payroll as a swap candidate: the script marks it REGULATED, the answer explains owning it adds legal liability, and it moves to the next candidate or says nothing else is worth swapping.",
+      "assertions": [
+        {
+          "text": "Says payroll is in a regulated category and is not offered as a swap",
+          "type": "content"
+        },
+        {
+          "text": "Lists the payroll tool under Not offered with its reason",
+          "type": "structural"
+        },
+        {
+          "text": "Does not recommend building a payroll system even though utilisation is low",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We renewed our CRM last month, notice period is 90 days, renewal is 2027-03-15. Is it worth looking at replacing it? We pay 9k and use 4 of 40 features.",
+      "expected_output": "Runs the script with the dates, reports the cancel-by date 2026-12-15 derived from the renewal date and notice days, labels it CANDIDATE, and asks the three questions about users, impact and data export before recommending.",
+      "assertions": [
+        {
+          "text": "States the cancel-by date as 2026-12-15",
+          "type": "content"
+        },
+        {
+          "text": "Runs the script rather than computing the date by hand in prose",
+          "type": "structural"
+        },
+        {
+          "text": "Asks who uses it, what breaks without it, and whether the data can be exported",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Audit our subscriptions, then just start rebuilding the top five tools straight away.",
+      "expected_output": "Completes the audit but does not start five rebuilds: it picks one tool to swap first and says each further swap is a separate run through the chain, stopping at the audit output.",
+      "assertions": [
+        {
+          "text": "Names one tool, not five, as the first swap",
+          "type": "content"
+        },
+        {
+          "text": "Does not begin any build work from the audit step",
+          "type": "quality"
+        },
+        {
+          "text": "Explains that parallel swaps stall and the next tool gets its own run",
+          "type": "content"
+        }
+      ]
+    }
+  ]
+}

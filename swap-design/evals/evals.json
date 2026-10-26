@@ -1,0 +1,103 @@
+{
+  "skill_name": "swap-design",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Make the new booking app look like our company. Our brand colour is a deep teal and we use a clean sans.",
+      "expected_output": "Builds tokens.json with light and dark themes and colour roles from the brand teal, runs contrast.py, fixes any FAIL by changing colours, and writes components.md with states.",
+      "assertions": [
+        {
+          "text": "tokens.json has themes.light and themes.dark each with colors and pairs",
+          "type": "structural"
+        },
+        {
+          "text": "Runs scripts/contrast.py and shows the output",
+          "type": "structural"
+        },
+        {
+          "text": "Fixes failing pairs by changing the colour, not the minimum",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Just copy the old tool's look so our team feels at home: same colours, same logo style, same icons.",
+      "expected_output": "Declines to copy the vendor's look: explains the legal risk of reproducing trade dress, logos and icons, and proposes keeping the familiar layout logic while using the business's own palette and icons.",
+      "assertions": [
+        {
+          "text": "Declines to reuse the vendor's colours, logo or icons",
+          "type": "content"
+        },
+        {
+          "text": "Offers the business's own brand as the alternative",
+          "type": "content"
+        },
+        {
+          "text": "Does not extract the vendor's colour values",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The grey for secondary text is #999 on white. It looks fine to me.",
+      "expected_output": "Runs the pair through contrast.py, reports it fails the 4.5 minimum for normal text, and proposes a darker grey that passes, rerunning the script.",
+      "assertions": [
+        {
+          "text": "Reports the ratio from the script, not an estimate",
+          "type": "content"
+        },
+        {
+          "text": "States that it fails the 4.5 minimum",
+          "type": "content"
+        },
+        {
+          "text": "Reruns the script on the fixed value",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Do dark mode later, just ship light for now.",
+      "expected_output": "Defines both themes now because retrofitting dark mode means redoing every colour pair, and runs contrast on both.",
+      "assertions": [
+        {
+          "text": "Defines both light and dark themes",
+          "type": "structural"
+        },
+        {
+          "text": "Explains the retrofit cost",
+          "type": "content"
+        },
+        {
+          "text": "Contrast results cover both themes",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "This is a back-end only swap, a nightly sync job with no screens. Do the design step.",
+      "expected_output": "Says there is no user interface to design, skips the skill, and routes onward to swap-build.",
+      "assertions": [
+        {
+          "text": "States there is nothing to design",
+          "type": "content"
+        },
+        {
+          "text": "Routes to swap-build",
+          "type": "content"
+        },
+        {
+          "text": "Does not invent screens or tokens",
+          "type": "quality"
+        }
+      ]
+    }
+  ]
+}

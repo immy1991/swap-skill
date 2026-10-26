@@ -1,0 +1,20 @@
+{
+  "name": "swap-skill",
+  "description": "Sixteen free Claude skills in two tracks: replace the software a business rents with a lean version it owns, or clone an app and sell it: audit or market-check, map, scope, plan, build, test, switch over or launch, prove the payback.",
+  "version": "1.0.0",
+  "author": {
+    "name": "immy1991"
+  },
+  "homepage": "https://github.com/immy1991/swap-skill",
+  "repository": "https://github.com/immy1991/swap-skill",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-skills",
+    "saas",
+    "software-costs",
+    "migration",
+    "automation"
+  ],
+  "skills": "./"
+}

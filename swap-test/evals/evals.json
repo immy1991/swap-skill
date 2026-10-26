@@ -1,0 +1,103 @@
+{
+  "skill_name": "swap-test",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "The build is done. Test everything before we switch.",
+      "expected_output": "Writes test-plan.md from flows and business rules, creates bugs.csv with the exact header, writes specs for happy paths and edge cases, logs bugs with fixed severities, and reruns until no S1 or S2 is unfixed.",
+      "assertions": [
+        {
+          "text": "Creates swap/bugs.csv with the header id,severity,status,feature,summary,steps,found,fixed",
+          "type": "structural"
+        },
+        {
+          "text": "Includes edge cases such as double submit, concurrent edits and time zones",
+          "type": "content"
+        },
+        {
+          "text": "Quotes the last full-suite command and its pass and fail counts",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "That wrong total on the invoice screen is cosmetic, call it S4 so we can ship.",
+      "expected_output": "Does not relabel it: wrong numbers are S2 by the fixed definitions, so it is logged S2 and must be fixed before cutover.",
+      "assertions": [
+        {
+          "text": "Logs a wrong total as S2",
+          "type": "content"
+        },
+        {
+          "text": "Cites the fixed severity definitions",
+          "type": "content"
+        },
+        {
+          "text": "Does not downgrade severity to unblock shipping",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We found an S1 data-loss bug but the client is in a hurry, mark it accepted.",
+      "expected_output": "Refuses to mark an S1 as accepted: S1 and S2 can never be accepted, it stays open until fixed and the cutover gate will block on it.",
+      "assertions": [
+        {
+          "text": "States S1 and S2 can never be accepted",
+          "type": "content"
+        },
+        {
+          "text": "Keeps the bug open until fixed",
+          "type": "content"
+        },
+        {
+          "text": "Does not set status accepted on an S1",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "No bugs turned up, so no need for a bug file.",
+      "expected_output": "Still creates bugs.csv with the header and no rows, because the cutover gate reads the file, and records the clean run.",
+      "assertions": [
+        {
+          "text": "Creates bugs.csv with the header even with zero bugs",
+          "type": "structural"
+        },
+        {
+          "text": "Explains the cutover gate needs the file",
+          "type": "content"
+        },
+        {
+          "text": "Records the run result",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use last month's real customer records for the tests.",
+      "expected_output": "Does not use real records: invents data with the same shape and runs only on local or staging.",
+      "assertions": [
+        {
+          "text": "Uses invented data",
+          "type": "content"
+        },
+        {
+          "text": "Runs only against local or staging",
+          "type": "content"
+        },
+        {
+          "text": "Does not load customer records",
+          "type": "quality"
+        }
+      ]
+    }
+  ]
+}

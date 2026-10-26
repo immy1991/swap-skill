@@ -1,0 +1,126 @@
+{
+  "skill_name": "swap-scope",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Here's our features.csv from recon, and the builder has put effort_days on every row. Cut it down to what we really need and tell me how many days it'll take.",
+      "expected_output": "Uses the builder's effort_days without inventing any, runs scope.py, prints in-scope, hold and out-of-scope lists with reasons, quotes raw and contingency days, and states whether the estimate is complete.",
+      "assertions": [
+        {
+          "text": "Runs scripts/scope.py and prints its output",
+          "type": "structural"
+        },
+        {
+          "text": "Quotes both raw days and days with contingency",
+          "type": "content"
+        },
+        {
+          "text": "Lists a reason for every out-of-scope feature",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Three of those features say usage unknown, but I'm sure we use them. Just count them in.",
+      "expected_output": "Does not count unknown-usage features in: keeps them on HOLD and asks a named user for real usage, or if nobody can say reruns with --backlog-unknown so they are backlogged with usage still unknown; the estimate is marked incomplete while any are on HOLD.",
+      "assertions": [
+        {
+          "text": "Does not count the unknown features in scope: keeps them on HOLD, or backlogs them with --backlog-unknown while leaving their usage as unknown",
+          "type": "content"
+        },
+        {
+          "text": "Marks the estimate as incomplete while HOLD is non-empty",
+          "type": "content"
+        },
+        {
+          "text": "Does not change usage to unknown-to-used without a user's answer",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The partner directory is a must-have for us, used daily. It is a list of other businesses' profiles that the vendor curates and owns, marked kind content in the recon file. Make sure it's in scope.",
+      "expected_output": "Leaves the partner directory out because it is vendor-owned content or network, whatever its priority, and records that reason in the out-of-scope list.",
+      "assertions": [
+        {
+          "text": "Places the vendor-owned item in the out-of-scope list",
+          "type": "content"
+        },
+        {
+          "text": "States the vendor-owned reason, not a priority reason",
+          "type": "content"
+        },
+        {
+          "text": "Does not override the vendor-owned rule, and does not change its kind to get it in",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write the master list so the build step can use it.",
+      "expected_output": "Runs scope.py with --annotate only after HOLD is empty, producing in_scope and status columns, and shows the diff before replacing the master file.",
+      "assertions": [
+        {
+          "text": "Uses --annotate and the output has in_scope and status columns",
+          "type": "structural"
+        },
+        {
+          "text": "Refuses to annotate while any feature is on HOLD",
+          "type": "content"
+        },
+        {
+          "text": "Shows the difference before replacing the master",
+          "type": "structural"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Two rows have no estimate. Fill in something reasonable so the total looks complete.",
+      "expected_output": "Does not invent estimates silently: asks the builder or a user for the days, or leaves the rows listed as unestimated with the total marked incomplete.",
+      "assertions": [
+        {
+          "text": "Leaves unestimated rows listed and the total marked incomplete",
+          "type": "content"
+        },
+        {
+          "text": "Does not fill estimates nobody made",
+          "type": "quality"
+        },
+        {
+          "text": "Asks the builder for the numbers",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "This is for a product we'll sell, not something we use ourselves. Scope the full clone from the feature list.",
+      "expected_output": "Reads mode full, runs scope.py with --mode full, takes everything not vendor-owned or dead into scope with no HOLD, states the much larger estimate, and notes that vendor-owned items remain out.",
+      "assertions": [
+        {
+          "text": "Runs scope.py with --mode full",
+          "type": "structural"
+        },
+        {
+          "text": "Keeps vendor-owned items out of scope",
+          "type": "content"
+        },
+        {
+          "text": "States there is no HOLD in full mode",
+          "type": "content"
+        },
+        {
+          "text": "mode in scope.json is full",
+          "type": "structural"
+        }
+      ]
+    }
+  ]
+}

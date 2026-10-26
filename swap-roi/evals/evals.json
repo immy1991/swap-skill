@@ -1,0 +1,130 @@
+{
+  "skill_name": "swap-roi",
+  "domain": "general",
+  "sourcing": "SYNTHETIC",
+  "sourcing_note": "Prompts are written from the author's reading of how a business owner or consultant would ask for each step (anonymised, no client names or figures). Not captured from live runs. Replace ids 0-2 with verbatim real prompts after the first live runs and flip sourcing to real-usage. Until then the build verdict stays SHIP WITH FLAGS.",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Does it pay back to replace our 12k a year scheduling tool? Scope says 20 days raw, my day rate is 500, hosting would be about 600 a year, and I'd spend 3 hours a month on it at 80 an hour.",
+      "expected_output": "Runs roi.py with the stated inputs using the raw 20 days, prints base and overrun cases, payback months, the build budget ceiling and a verdict, with each input traced to the user's figures.",
+      "assertions": [
+        {
+          "text": "Runs scripts/roi.py with --build-days 20 --day-rate 500",
+          "type": "structural"
+        },
+        {
+          "text": "Shows both the base case and the overrun case",
+          "type": "structural"
+        },
+        {
+          "text": "Includes the build budget ceiling",
+          "type": "content"
+        },
+        {
+          "text": "Uses the raw 20 days, not a figure with contingency added",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Scope came back at 30 days with contingency. Use that for the ROI.",
+      "expected_output": "Asks for or uses effort_days_raw from scope.json instead of the contingency figure, and explains that roi.py already stress-tests with an overrun so using both would count the cushion twice.",
+      "assertions": [
+        {
+          "text": "Explains the double-counting problem",
+          "type": "content"
+        },
+        {
+          "text": "Uses the raw days figure",
+          "type": "content"
+        },
+        {
+          "text": "Does not pass the contingency-inflated days to the script",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Hosting will probably be around 50 a month, whatever. And I won't count my own time, it's my business.",
+      "expected_output": "Asks for a real hosting quote or marks run cost unknown, and keeps the script's warnings that maintenance and labour are priced at zero in the output rather than dropping them.",
+      "assertions": [
+        {
+          "text": "Keeps the warning that unpriced time flatters the payback",
+          "type": "content"
+        },
+        {
+          "text": "Asks for a quote or marks hosting as an estimate",
+          "type": "content"
+        },
+        {
+          "text": "Does not remove the warnings from the written output",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The numbers say it doesn't pay back but I really want to build it. Write it up as a go.",
+      "expected_output": "Does not write a go: reports KEEP SAAS, quotes how far the numbers are off and the build budget ceiling, and says what would have to change for it to pay back.",
+      "assertions": [
+        {
+          "text": "States the verdict KEEP SAAS exactly as the script gave it",
+          "type": "content"
+        },
+        {
+          "text": "Quotes the build budget ceiling",
+          "type": "content"
+        },
+        {
+          "text": "Does not relabel the verdict as BUILD or go",
+          "type": "quality"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "It's been 90 days since we switched. Did the swap actually save what we forecast?",
+      "expected_output": "Runs roi.py in actuals mode with real invoices and time logs, writes roi-actuals.json, and puts forecast and actual side by side for payback, build cost and run cost with a reason for any gap over 20 percent.",
+      "assertions": [
+        {
+          "text": "Writes swap/roi-actuals.json separate from the forecast",
+          "type": "structural"
+        },
+        {
+          "text": "Has a Forecast vs actual table",
+          "type": "structural"
+        },
+        {
+          "text": "Explains each gap larger than 20 percent from evidence",
+          "type": "content"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Will the product we're building pay back? We'd charge 29 a month, expect about 12 new customers a month, 4 percent monthly churn, 90 to win each, 4 variable cost, 300 fixed, scope says 60 days at 500 a day.",
+      "expected_output": "Runs sellmodel.py with those flags, prints unit economics and base and stress cases, marks every input as the user's assumption, and gives a verdict with the lowest cash point.",
+      "assertions": [
+        {
+          "text": "Runs scripts/sellmodel.py with the stated flags",
+          "type": "structural"
+        },
+        {
+          "text": "Shows base and stress cases and the lowest cash point",
+          "type": "content"
+        },
+        {
+          "text": "Marks acquisition and churn as the user's assumptions",
+          "type": "content"
+        },
+        {
+          "text": "Writes swap/sellmodel.json",
+          "type": "structural"
+        }
+      ]
+    }
+  ]
+}
